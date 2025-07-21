@@ -126,22 +126,23 @@ class AsyncTerminal:
 
     async def run(self):
         """Main terminal loop"""
-        # Setup terminal
-        tty.setcbreak(sys.stdin)
-        os.system('clear')
-        rows = self._move_to_bottom_of_screen()
-
-        # Initialize message store and stdin reader
-        self.msg_store = MessageStore(rows - 1, self._redraw_screen)
-        stdin_reader = await self._create_stdin_reader()
 
         try:
             # Setup user resources if provided
             if self.setup_resources:
                 self.resources = await self.setup_resources()
 
+            # Setup terminal
+            tty.setcbreak(sys.stdin)
+            os.system('clear')
+            rows = self._move_to_bottom_of_screen()
+            
+            self.msg_store = MessageStore(rows - 1, self._redraw_screen)
+
             # Show startup message
             await self.msg_store.append(self.startup_message)
+
+            stdin_reader = await self._create_stdin_reader()
 
             # Main input loop
             while True:
